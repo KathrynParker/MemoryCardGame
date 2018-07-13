@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import './App.css';
-import MemoryCard from './MemoryCard.js';
 
+import MemoryCard from './MemoryCard.js'
+
+// attribute the guy from stackoverflow
 function shuffle(a) {
     var j, x, i;
     for (i = a.length - 1; i > 0; i--) {
@@ -15,8 +17,8 @@ function shuffle(a) {
 
 function generateDeck() {
     // return an array of card objects, where each card has "symbol" and "isFlipped"
-    var symbols = ["∆", "ß", "£", "§", "•", "$", "+", "ø"];
     var deck = [];
+    var symbols = ["∆", "ß", "£", "§", "•", "$", "+", "ø"];
 
     for (var i=0; i<16; i++) {
         deck.push({
@@ -37,34 +39,37 @@ class App extends Component {
         this.state = {
             deck: generateDeck(),
             pickedCards: []
-        };
+        }
     }
 
     pickCard(cardIndex) {
         let newDeck = this.state.deck.map(card => {
             return {...card}
         });
-        newDeck[cardIndex].isFlipped = true;
+    newDeck[cardIndex].isFlipped = true;
 
-        let newPickedCards = this.state.pickedCards.concat(cardIndex);
+    let newPickedCards = this.state.pickedCards.concat(cardIndex);
 
-        if (newPickedCards.length == 2) {
-            var card1Index = newPickedCards[0];
-            var card2Index = newPickedCards[1];
-            var card1 = newDeck[card1Index];
-            var card2 = newDeck[card2Index];
-            if ( card1.symbol !== card2.symbol ) {
-                setTimeout(()=>{
-                    this.unflipCards(card1Index, card2Index);
-                }, 1000 );
-            }
-            newPickedCards = [];
+    // if they've just selected their second card, compare the two.
+    //.   if they're not the same symbol, flip them back over
+    if (newPickedCards.length == 2) {
+        var card1Index = newPickedCards[0];
+        var card2Index = newPickedCards[1];
+        var card1 = newDeck[card1Index];
+        var card2 = newDeck[card2Index];
+        if ( card1.symbol !== card2.symbol ) {
+        // unflip both cards
+        setTimeout(()=>{
+            this.unflipCards(card1Index, card2Index);
+        }, 1000 );
         }
+        newPickedCards = [];
+    }
 
-        this.setState({
-            deck: newDeck,
-            pickedCards: newPickedCards
-        });
+    this.setState({
+        deck: newDeck,
+        pickedCards: newPickedCards
+    });
     }
 
     unflipCards(card1Index, card2Index) {
@@ -72,38 +77,45 @@ class App extends Component {
             return {...card}
         });
 
-        newDeck[card1Index]
-    }
+    newDeck[card1Index].isFlipped = false;
+    newDeck[card2Index].isFlipped = false;
+
+    this.setState({
+        deck: newDeck
+    });
+}
 
     render() {
-        var cardsJSX = this.state.deck.map((card) => {
-            return <MemoryCard  symbol={card.symbol}
-                                isFlipped={card.isFlipped}
-                                pickCard={this.pickCard.bind(this, index)}/>
-            });
 
-        return (
-            <div className="App">
-                <header className="App-header">
-                    <h1 className="App-title">Memory Game</h1>
-                    <h3 className="App-subtitle">Match cards to win</h3>
-                </header>
+    var cardsJSX = this.state.deck.map((card, index) => {
+        return <MemoryCard  symbol={card.symbol}
+                            isFlipped={card.isFlipped}
+                            pickCard={this.pickCard.bind(this, index)} />
+    });
 
-                <div>
-                    {cardsJSX.slice(0,4)}
-                </div>
-                <div>
-                    {cardsJSX.slice(4,8)}
-                </div>
-                <div>
-                    {cardsJSX.slice(8,12)}
-                </div>
-                <div>
-                    {cardsJSX.slice(12,16)}
-                </div>
-            </div>
-        )
-        };
+    return (
+        <div className="App">
+        <header className="App-header">
+            <h1 className="App-title">Memory Game</h1>
+            <p className="App-subtitle">Match Cards To Win</p>
+        </header>
+
+        <div>
+            {cardsJSX.slice(0,4)}
+        </div>
+        <div>
+            {cardsJSX.slice(4,8)}
+        </div>
+        <div>
+            {cardsJSX.slice(8,12)}
+        </div>
+        <div>
+            {cardsJSX.slice(12, 16)}
+        </div>
+
+        </div>
+    );
+    }
 }
 
 export default App;
